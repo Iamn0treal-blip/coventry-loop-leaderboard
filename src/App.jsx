@@ -69,7 +69,7 @@ function formatDate(dateString) {
   });
 }
 
-const methodOptions = [
+const defaultMethodOptions = [
   "Running",
   "Biking",
   "Walking",
@@ -78,7 +78,6 @@ const methodOptions = [
   "Scooter",
   "Skiing",
   "Snowshoe",
-  "Other",
 ];
 
 const blankForm = {
@@ -134,20 +133,27 @@ export default function CoventryLoopLeaderboard() {
       .sort((a, b) => a.seconds - b.seconds);
   }, [records]);
 
-  const availableMethods = useMemo(() => {
-    return [
-      "All Methods",
-      ...Array.from(new Set(sortedRecords.map((record) => record.method))).sort(),
-    ];
-  }, [sortedRecords]);
+const submittedMethods = useMemo(() => {
+  return Array.from(new Set(sortedRecords.map((record) => record.method))).sort();
+}, [sortedRecords]);
+
+const submitMethodOptions = useMemo(() => {
+  return [
+    ...Array.from(new Set([...defaultMethodOptions, ...submittedMethods])).sort(),
+    "Other",
+  ];
+}, [submittedMethods]);
+
+const availableMethods = useMemo(() => {
+  return ["All Methods", ...submittedMethods];
+}, [submittedMethods]);
 
   const displayedRecords = useMemo(() => {
     if (methodFilter === "All Methods") return sortedRecords;
     return sortedRecords.filter((record) => record.method === methodFilter);
   }, [methodFilter, sortedRecords]);
 
-  const currentRecord = sortedRecords[0];
-  const currentDisplayedRecord = displayedRecords[0];
+  const currentRecord = displayedRecords[0];
 
   function updateForm(field, value) {
     setForm((current) => ({ ...current, [field]: value }));
@@ -225,7 +231,9 @@ export default function CoventryLoopLeaderboard() {
             </div>
 
             <div className="rounded-2xl bg-slate-900 p-5 text-white shadow-sm">
-              <p className="text-sm text-slate-300">Overall record</p>
+              <p className="text-sm text-slate-300">
+                {methodFilter === "All Methods" ? "Overall record" : `${methodFilter} record`}
+              </p>
 
               <p className="mt-1 text-2xl font-bold">
                 {currentRecord ? formatSeconds(Number(currentRecord.seconds)) : "No records"}
@@ -297,8 +305,8 @@ export default function CoventryLoopLeaderboard() {
                   value={form.method}
                   onChange={(event) => updateForm("method", event.target.value)}
                 >
-                  {methodOptions.map((method) => (
-                    <option key={method}>{method}</option>
+                  {submitMethodOptions.map((method) => (
+                  <option key={method}>{method}</option>
                   ))}
                 </select>
               </label>
@@ -389,9 +397,9 @@ export default function CoventryLoopLeaderboard() {
                 </p>
 
                 <p className="text-lg font-semibold">
-                  {currentDisplayedRecord
-                    ? `${formatSeconds(Number(currentDisplayedRecord.seconds))} by ${currentDisplayedRecord.name}`
-                    : "No records yet"}
+                 {currentRecord
+                 ? `${formatSeconds(Number(currentRecord.seconds))} by ${currentRecord.name}`
+                  : "No records yet"}
                 </p>
               </div>
             </div>
