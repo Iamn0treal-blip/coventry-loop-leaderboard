@@ -396,37 +396,76 @@ export default function CoventryLoopLeaderboard() {
               </div>
             </div>
 
-            <div className="overflow-x-auto rounded-2xl border border-slate-200">
-              <table className="w-full min-w-[760px] border-collapse bg-white text-left text-sm">
-                <thead className="bg-slate-100 text-slate-700">
-                  <tr>
-                    <th className="px-4 py-3 font-semibold">Rank</th>
-                    <th className="px-4 py-3 font-semibold">Name</th>
-                    <th className="px-4 py-3 font-semibold">Time</th>
-                    <th className="px-4 py-3 font-semibold">Method</th>
-                    <th className="px-4 py-3 font-semibold">Date</th>
-                    <th className="px-4 py-3 font-semibold">Note</th>
-                  </tr>
-                </thead>
+            {/* Mobile card view */}
+<div className="space-y-3 md:hidden">
+  {displayedRecords.map((record, index) => (
+    <div
+      key={record.id}
+      className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"
+    >
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <p className="text-sm font-semibold text-slate-500">#{index + 1}</p>
+          <p className="text-lg font-bold text-slate-900">{record.name}</p>
+        </div>
 
-                <tbody>
-                  {displayedRecords.map((record, index) => (
-                    <tr key={record.id} className="border-t border-slate-200">
-                      <td className="px-4 py-3 font-bold">#{index + 1}</td>
-                      <td className="px-4 py-3">{record.name}</td>
-                      <td className="px-4 py-3 font-mono font-semibold">
-                        {formatSeconds(Number(record.seconds))}
-                      </td>
-                      <td className="px-4 py-3">{record.method}</td>
-                      <td className="px-4 py-3">{formatDate(record.date)}</td>
-                      <td className="px-4 py-3 text-slate-500">
-                        {record.notes || "—"}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+        <p className="rounded-full bg-slate-900 px-3 py-1 font-mono text-sm font-semibold text-white">
+          {formatSeconds(Number(record.seconds))}
+        </p>
+      </div>
+
+      <div className="mt-3 space-y-1 text-sm text-slate-600">
+        <p>
+          <span className="font-medium text-slate-800">Method:</span>{" "}
+          {record.method}
+        </p>
+        <p>
+          <span className="font-medium text-slate-800">Date:</span>{" "}
+          {formatDate(record.date)}
+        </p>
+        {record.notes && (
+          <p>
+            <span className="font-medium text-slate-800">Note:</span>{" "}
+            {record.notes}
+          </p>
+        )}
+      </div>
+    </div>
+  ))}
+</div>
+
+{/* Desktop table view */}
+<div className="hidden overflow-x-auto rounded-2xl border border-slate-200 md:block">
+  <table className="w-full border-collapse bg-white text-left text-sm">
+    <thead className="bg-slate-100 text-slate-700">
+      <tr>
+        <th className="px-4 py-3 font-semibold">Rank</th>
+        <th className="px-4 py-3 font-semibold">Name</th>
+        <th className="px-4 py-3 font-semibold">Time</th>
+        <th className="px-4 py-3 font-semibold">Method</th>
+        <th className="px-4 py-3 font-semibold">Date</th>
+        <th className="px-4 py-3 font-semibold">Note</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      {displayedRecords.map((record, index) => (
+        <tr key={record.id} className="border-t border-slate-200">
+          <td className="px-4 py-3 font-bold">#{index + 1}</td>
+          <td className="px-4 py-3">{record.name}</td>
+          <td className="px-4 py-3 font-mono font-semibold">
+            {formatSeconds(Number(record.seconds))}
+          </td>
+          <td className="px-4 py-3">{record.method}</td>
+          <td className="px-4 py-3">{formatDate(record.date)}</td>
+          <td className="px-4 py-3 text-slate-500">
+            {record.notes || "—"}
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
 
             {!loading && displayedRecords.length === 0 && (
               <p className="mt-4 rounded-xl bg-slate-100 px-4 py-3 text-sm text-slate-600">
